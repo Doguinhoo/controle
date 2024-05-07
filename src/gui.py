@@ -22,10 +22,6 @@ def entrada(tipo):
     cpf = tk.Entry(master=entradas, text="XXX.XXX.XXX-XX")
     cpf.pack()
 
-    tk.Label(master=etiquetas, text="RG:").pack()
-    rg = tk.Entry(master=entradas)
-    rg.pack()
-
     tk.Label(master=etiquetas, text="Profissão:").pack()
     profissao = tk.Entry(master=entradas)
     profissao.pack()
