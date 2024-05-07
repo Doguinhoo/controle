@@ -3,7 +3,7 @@ import re
 import time
 
 
-PATH = './Dados/'
+PATH = './Dados-Enchente/'
 
 PATH_VOL = PATH + 'Voluntarios/voluntarios.csv'
 PATH_REF = PATH + 'Refugiados/refugiados.csv'
@@ -12,6 +12,8 @@ def check_row_using_cpf(path, cpf) -> pd.DataFrame:
     df = pd.read_csv(path, sep=';', dtype={'CPF': str})
     df['CPF'] = df['CPF'].str.strip()  # Clean any whitespace
     match = df[df['CPF'] == cpf]
+    if not match.empty:
+        return match.iloc[[-1]]
     return match
 
 def get_name(df, index):
@@ -24,9 +26,15 @@ def liberate(path, type):
         print(f'nova liberação de {type}')
         cpf_input = input(f'Digite o CPF do {type} de saída: ')
         CPF = format_cpf(cpf_input)  # Assuming format_cpf formats correctly
-        if not validate_cpf(CPF):
+
+        if cpf_input == '':
+            print(f'{type} Não possui Cadastro com CPF. Necessita de atualização manual.')
+            print('Horario de saída do {type}: ' + time.strftime('%H:%M:%S'))
+
+        elif not validate_cpf(CPF):
             print('CPF inválido. Tente novamente.')
             continue
+
 
         result_df = check_row_using_cpf(path, CPF)
         if result_df.empty:
@@ -121,13 +129,12 @@ def confirmacao(cadastro):
 Verifique se as informações estão corretas:
 Nome: {cadastro['Nome']}
 CPF: {cadastro['CPF']}
-RG: {cadastro['RG']}
 Profissão: {cadastro['Profissao']}
 Área de atuação: {cadastro['Atuacao']}
 Telefone: {cadastro['Telefone']}
 Confirma? (s/n): ''')
     resposta = input().strip().lower()
-    return resposta in ['s', 'sim', 'yes', 'y', '', 'Y', 'S', 'SIM', 'YES', 'Sim', 'Yes']
+    return resposta in ['s', 'sim', 'yes', 'y', '']
 
 
 def cadastro(path, type):
@@ -135,7 +142,6 @@ def cadastro(path, type):
         cadastro = {
             'Nome': '',
             'CPF': '',
-            'RG': '',
             'Profissao': '',
             'Atuacao': '',
             'Telefone': '',
@@ -158,15 +164,6 @@ def cadastro(path, type):
                     cadastro['CPF']  = format_cpf(input(f'Reenvie CPF do {type}: '))
             else:
                 cadastro['CPF'] = cpf
-
-            rg =  input(f'RG do {type}: ')
-            if rg != '':
-                cadastro['RG'] = rg
-                while not cadastro['RG'].isdigit():
-                    print('RG inválido')
-                    cadastro['RG'] = input(f'Reenvie RG do {type}: ')
-            else:
-                cadastro['RG'] = rg
 
             cadastro['Profissao']   = input(f'Profissão do {type}: ')
             cadastro['Atuacao']     = input(f'Área de atuação do {type}: ')
