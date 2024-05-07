@@ -46,8 +46,6 @@ git clone https://github.com/Doguinhoo/controle
 ```
 abrir mais um powershell
 
-Em ambos usar o comando
-
 no primeiro usar o comando:
 
 ```
