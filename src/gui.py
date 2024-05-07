@@ -1,12 +1,13 @@
 import tkinter as tk
 import deps
 
-# tipo: "voluntário" ou "refugiado"
+# tipo: "voluntário" ou "abrigado"
 
 
 def entrada(tipo):
     janela = tk.Tk()
     janela.resizable(False, False)
+    janela.tk.call('tk', 'scaling', 4.0)
     janela.title(f"Entrada de {tipo}")
 
     teste = tk.Frame(master=janela)
