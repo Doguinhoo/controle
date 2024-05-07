@@ -8,8 +8,7 @@ PATH = './'
 PATH_VOL = PATH + 'Voluntarios/voluntarios.csv'
 PATH_ABR = PATH + 'Abrigados/abrigados.csv'
 
-
-def create_empty_csv(path):
+def create__empty_csv(path):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     df = pd.DataFrame(columns=[
         'Nome',
@@ -17,15 +16,13 @@ def create_empty_csv(path):
         'Profissao',
         'Atuacao',
         'Telefone',
-        'Data',
-        'HoraEntrada',
-        'HoraSaida',
+        'Entrada',
+        'Saida',
         'Confirmado'
-    ]
-    )
+        ]
+        )
 
-    df.to_csv(path)
-
+        df.to_csv(path)
 
 def check_row_using_cpf(path, cpf) -> pd.DataFrame:
     if not os.path.exists(path):
@@ -88,15 +85,15 @@ def libera(path, cpf):
 
     nome = get_name(resultado_df, resultado_df.index[0])
 
-    if resultado_df['HoraSaida'].notnull().all():
+    if resultado_df['Saida'].notnull().all():
         return (nome, "já saiu")
 
     df = pd.read_csv(path, sep=';')
     # Setting an item of incompatible dtype is deprecated and will raise an error in a future version of pandas. Value '15:47:54' has dtype incompatible with float64, please explicitly cast to a compatible dtype first.
-    df.loc[resultado_df.index[0], 'HoraSaida'] = time.strftime('%H:%M:%S')
+    df.loc[resultado_df.index[0], 'Saida'] = time.strftime('%d/%m/%Y %H:%M:%S')
     df.to_csv(path, sep=';', index=False)
+    
     return (nome, "confirmado")
-
 
 def format_cpf(cpf: str):
     return cpf[:3] + '.' + cpf[3:6] + '.' + cpf[6:9] + '-' + cpf[9:11]
@@ -184,9 +181,8 @@ def cadastroTerminal(caminho, tipo):
         'Profissao': '',
         'Atuacao': '',
         'Telefone': '',
-        'Data': None,
-        'HoraEntrada': None,
-        'HoraSaida': None,
+        'Entrada': None,
+        'Saida': None,
         'Confirmado': False,
     }
 
@@ -216,8 +212,7 @@ def cadastroTerminal(caminho, tipo):
         cadastro['Confirmado'] = confirmacaoTerminal(cadastro)
         if cadastro['Confirmado']:
             print('Cadastro confirmado. Aguarde enquanto realizamos o cadastro...')
-            cadastro['Data'] = time.strftime('%d/%m/%Y')
-            cadastro['HoraEntrada'] = time.strftime('%H:%M:%S')
+            cadastro['Entrada'] = time.strftime('%d/%m/%Y %H:%M:%S')
 
             serializaCadastro(caminho, cadastro)
 

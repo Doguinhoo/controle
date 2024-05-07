@@ -7,7 +7,7 @@ import deps
 def entrada(tipo):
     janela = tk.Tk()
     janela.resizable(False, False)
-    janela.tk.call('tk', 'scaling', 4.0)
+    janela.tk.call('tk', 'scaling', 8.0)
     janela.title(f"Entrada de {tipo}")
 
     teste = tk.Frame(master=janela)
@@ -21,10 +21,6 @@ def entrada(tipo):
     tk.Label(master=etiquetas, text="CPF:").pack()
     cpf = tk.Entry(master=entradas, text="XXX.XXX.XXX-XX")
     cpf.pack()
-
-    tk.Label(master=etiquetas, text="RG:").pack()
-    rg = tk.Entry(master=entradas)
-    rg.pack()
 
     tk.Label(master=etiquetas, text="Profissão:").pack()
     profissao = tk.Entry(master=entradas)
