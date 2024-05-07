@@ -7,7 +7,7 @@ import deps
 def entrada(tipo):
     janela = tk.Tk()
     janela.resizable(False, False)
-    janela.tk.call('tk', 'scaling', 4.0)
+    janela.tk.call('tk', 'scaling', 8.0)
     janela.title(f"Entrada de {tipo}")
 
     teste = tk.Frame(master=janela)
