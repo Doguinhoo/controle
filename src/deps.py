@@ -1,16 +1,36 @@
 import pandas as pd
 import re
 import time
+import os
 
-
-PATH = '../Dados-Enchente/'
+PATH = './'
 
 PATH_VOL = PATH + 'Voluntarios/voluntarios.csv'
-PATH_REF = PATH + 'Refugiados/refugiados.csv'
+PATH_REF = PATH + 'Abrigados/abrigados.csv'
 
+def create__empty_csv(path):
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        df = pd.DataFrame(columns=[
+            'Nome', 
+            'CPF', 
+            'Profissao',
+            'Atuacao',
+            'Telefone',
+            'Data',
+            'HoraEntrada',
+            'HoraSaida',
+            'Confirmado'
+            ]
+            )
+
+        df.to_csv(path)
 
 def check_row_using_cpf(path, cpf) -> pd.DataFrame:
-    df = pd.read_csv(path, sep=';', dtype={'CPF': str})
+    if not os.path.exists(path):
+        create__empty_csv(path)
+        return pd.DataFrame()
+    else:
+        df = pd.read_csv(path, sep=';', dtype={'CPF': str})
     df['CPF'] = df['CPF'].str.strip()  # Clean any whitespace
     match = df[df['CPF'] == cpf]
     if not match.empty:
@@ -41,20 +61,17 @@ def liberate(path, type):
 
         result_df = check_row_using_cpf(path, CPF)
         if result_df.empty:
-            print(
-                f'CPF {CPF} não encontrado. Saída NÃO autorizada.\nTente novamente.')
+            print(f'CPF {CPF} não encontrado. Saída NÃO autorizada.\nTente novamente.')
             continue
 
         if result_df['HoraSaida'].notnull().all():
-            print(f'{get_name(
-                result_df, result_df.index[0])} já saiu. Saída NÃO autorizada.\nTente novamente.')
+            print(f'{get_name(result_df, result_df.index[0])} já saiu. Saída NÃO autorizada.\nTente novamente.')
             continue
         name = get_name(result_df, result_df.index[0])
-        verify_exit = input(f'Confirma a saída de {
-                            name}? (s/n): ').strip().lower()
+        verify_exit = input(f'Confirma a saída de {name}? (s/n):').strip().lower()
         if verify_exit in ['', 's', 'y', 'sim', 'yes']:
             df = pd.read_csv(path, sep=';')
-            df.loc[result_df.index[0], 'HoraSaida'] = time.strftime('%H:%M:%S')
+            df.loc[result_df.index[0], 'HoraSaida'] = time.strftime('%H:%M:%S') #Setting an item of incompatible dtype is deprecated and will raise an error in a future version of pandas. Value '15:47:54' has dtype incompatible with float64, please explicitly cast to a compatible dtype first.
             df.to_csv(path, sep=';', index=False)
             print('Saída confirmada')
         else:
