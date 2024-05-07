@@ -2,3 +2,6 @@
 Dados-Enchente
 Abrigados
 Voluntarios
+build
+dist
+*.spec
