@@ -8,26 +8,28 @@ PATH = './'
 PATH_VOL = PATH + 'Voluntarios/voluntarios.csv'
 PATH_REF = PATH + 'Abrigados/abrigados.csv'
 
-def create__empty_csv(path):
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        df = pd.DataFrame(columns=[
-            'Nome', 
-            'CPF', 
-            'Profissao',
-            'Atuacao',
-            'Telefone',
-            'Data',
-            'HoraEntrada',
-            'HoraSaida',
-            'Confirmado'
-            ]
-            )
 
-        df.to_csv(path)
+def create_empty_csv(path):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    df = pd.DataFrame(columns=[
+        'Nome',
+        'CPF',
+        'Profissao',
+        'Atuacao',
+        'Telefone',
+        'Data',
+        'HoraEntrada',
+        'HoraSaida',
+        'Confirmado'
+    ]
+    )
+
+    df.to_csv(path)
+
 
 def check_row_using_cpf(path, cpf) -> pd.DataFrame:
     if not os.path.exists(path):
-        create__empty_csv(path)
+        create_empty_csv(path)
         return pd.DataFrame()
     else:
         df = pd.read_csv(path, sep=';', dtype={'CPF': str})
@@ -42,39 +44,58 @@ def get_name(df, index):
     return df.loc[index, 'Nome'] if not df.empty else ''
 
 
-def liberate(path, type):
-    print(f'SAÍDA DE {type.upper()}')
+# pergunta um cpf para liberação pelo terminal e o retorna
+def liberaTerminal(path, tipo):
     while True:
         print('\n\n' + 20 * '-')
-        print(f'nova liberação de {type}')
-        cpf_input = input(f'Digite o CPF do {type} de saída: ')
-        CPF = format_cpf(cpf_input)  # Assuming format_cpf formats correctly
+        print(f'nova liberação de {tipo}')
+        cpf_input = input(f'Digite o CPF do {tipo} de saída: ')
+        cpf = format_cpf(cpf_input)  # Assuming format_cpf formats correctly
 
         if cpf_input == '':
-            print(f'{type} Não possui Cadastro com CPF. Necessita de atualização manual.')
-            print(f'Horario de saída do {type}: ' + time.strftime('%H:%M:%S'))
+            print(
+                f'{tipo} Não possui Cadastro com CPF. Necessita de atualização manual.')
+            print(f'Horario de saída do {tipo}: ' + time.strftime('%H:%M:%S'))
 
-        elif not validate_cpf(CPF):
+        elif not validate_cpf(cpf):
             print('CPF inválido. Tente novamente.')
             continue
 
-        result_df = check_row_using_cpf(path, CPF)
-        if result_df.empty:
-            print(f'CPF {CPF} não encontrado. Saída NÃO autorizada.\nTente novamente.')
-            continue
+        match libera(path, cpf):
+            case (_, "não encontrado"):
+                print(
+                    f'CPF {cpf} não encontrado. Saída NÃO autorizada.\nTente novamente.')
+                continue
+            case (nome, "já saiu"):
+                print(f'{nome} já saiu. Saída NÃO autorizada.\nTente novamente.')
+                continue
+            case (nome, "confirmado"):
+                verifica_saida = input(f'Confirma a saída de {
+                                       nome}? (s/n): ').strip().lower()
+                if verifica_saida in ['', 's', 'y', 'sim', 'yes']:
+                    print('Saída confirmada')
+                    break
+                else:
+                    print('Saída não confirmada. Retomando início...')
+                    # por enquanto isso não faz nada, mas deveria remover o horário de saída da pessoa
 
-        if result_df['HoraSaida'].notnull().all():
-            print(f'{get_name(result_df, result_df.index[0])} já saiu. Saída NÃO autorizada.\nTente novamente.')
-            continue
-        name = get_name(result_df, result_df.index[0])
-        verify_exit = input(f'Confirma a saída de {name}? (s/n): ').strip().lower()
-        if verify_exit in ['', 's', 'y', 'sim', 'yes']:
-            df = pd.read_csv(path, sep=';')
-            df.loc[result_df.index[0], 'HoraSaida'] = time.strftime('%H:%M:%S') #Setting an item of incompatible dtype is deprecated and will raise an error in a future version of pandas. Value '15:47:54' has dtype incompatible with float64, please explicitly cast to a compatible dtype first.
-            df.to_csv(path, sep=';', index=False)
-            print('Saída confirmada')
-        else:
-            print('Saída não confirmada. Retomando início...')
+
+# tenta diberar a pessoa com o cpf recebido, retorna o nome da pessoa e o resultado da tentativa
+def libera(path, cpf):
+    resultado_df = check_row_using_cpf(path, cpf)
+    if resultado_df.empty:
+        return (None, "não encontrado")
+
+    nome = get_name(resultado_df, resultado_df.index[0])
+
+    if resultado_df['HoraSaida'].notnull().all():
+        return (nome, "já saiu")
+
+    df = pd.read_csv(path, sep=';')
+    # Setting an item of incompatible dtype is deprecated and will raise an error in a future version of pandas. Value '15:47:54' has dtype incompatible with float64, please explicitly cast to a compatible dtype first.
+    df.loc[resultado_df.index[0], 'HoraSaida'] = time.strftime('%H:%M:%S')
+    df.to_csv(path, sep=';', index=False)
+    return (nome, "confirmado")
 
 
 def format_cpf(cpf: str):
@@ -130,26 +151,19 @@ def validate_cpf(cpf: str) -> bool:
     return True
 
 
-def add_row_csv(path, row: dict):
-    df = pd.read_csv(path, sep=';')
-    new_row = pd.DataFrame([row.values()], columns=row.keys())
+def serializaCadastro(caminho, cadastro: dict):
+    df = pd.read_csv(caminho, sep=';')
+    new_row = pd.DataFrame([cadastro.values()], columns=cadastro.keys())
     df = pd.concat([df, new_row], ignore_index=True)
-    df.to_csv(path, index=False, sep=';')
+    df.to_csv(caminho, index=False, sep=';')
 
 
-def add_unique_row_csv(path, row):
-    if check_row_using_cpf(path, row['CPF']).empty:
-        add_row_csv(path, row)
-        print("Registro adicionado com sucesso.")
-    else:
-        print("Erro: CPF já registrado.")
-
-
-def validate_telefone(telefone: str) -> bool:
+def validaTelefone(telefone: str) -> bool:
     return telefone.isdigit() and len(telefone) == 11
 
 
-def confirmacao(cadastro):
+# pergunta no terminal se os dados da pessoa estão corretos
+def confirmacaoTerminal(cadastro):
     print(f'''
 Verifique se as informações estão corretas:
 Nome: {cadastro['Nome']}
@@ -162,51 +176,51 @@ Confirma? (s/n): ''')
     return resposta in ['s', 'sim', 'yes', 'y', '']
 
 
-def cadastro(path, type):
-    while True:
-        cadastro = {
-            'Nome': '',
-            'CPF': '',
-            'Profissao': '',
-            'Atuacao': '',
-            'Telefone': '',
-            'Data': None,
-            'HoraEntrada': None,
-            'HoraSaida': None,
-            'Confirmado': False,
-        }
-        print(f'Cadastro de {type.upper()}')
-        while not cadastro['Confirmado']:
-            print('\n\n' + 20 * '-')
-            print(f'Novo cadastro de {type}')
-            cadastro['Nome'] = input(f'Nome do {type}: ')
+# pergunta os dados no terminal e realiza o cadastro de uma pessoa
+def cadastroTerminal(caminho, tipo):
+    cadastro = {
+        'Nome': '',
+        'CPF': '',
+        'Profissao': '',
+        'Atuacao': '',
+        'Telefone': '',
+        'Data': None,
+        'HoraEntrada': None,
+        'HoraSaida': None,
+        'Confirmado': False,
+    }
 
-            cpf = input(f'CPF do {type}: ')
-            if cpf != '':
-                cadastro['CPF'] = format_cpf(cpf)
-                while not validate_cpf(cadastro['CPF']):
-                    print('CPF inválido')
-                    cadastro['CPF'] = format_cpf(
-                        input(f'Reenvie CPF do {type}: '))
-            else:
-                cadastro['CPF'] = cpf
+    while not cadastro['Confirmado']:
+        print('\n\n' + 20 * '-')
+        print(f'Novo cadastro de {tipo}')
+        cadastro['Nome'] = input(f'Nome do {tipo}: ')
 
-            cadastro['Profissao'] = input(f'Profissão do {type}: ')
-            cadastro['Atuacao'] = input(f'Área de atuação do {type}: ')
+        cpf = input(f'CPF do {tipo}: ')
+        if cpf != '':
+            cadastro['CPF'] = format_cpf(cpf)
+            while not validate_cpf(cadastro['CPF']):
+                print('CPF inválido')
+                cadastro['CPF'] = format_cpf(
+                    input(f'Reenvie CPF do {tipo}: '))
+        else:
+            cadastro['CPF'] = cpf
 
-            cadastro['Telefone'] = input(f'Telefone do {type}: ')
-            while not validate_telefone(cadastro['Telefone']):
-                print('Telefone inválido')
-                cadastro['Telefone'] = input(f'Reenvie telefone do {type}: ')
+        cadastro['Profissao'] = input(f'Profissão do {tipo}: ')
+        cadastro['Atuacao'] = input(f'Área de atuação do {tipo}: ')
 
-            cadastro['Confirmado'] = confirmacao(cadastro)
-            if cadastro['Confirmado']:
-                print('Cadastro confirmado. Aguarde enquanto realizamos o cadastro...')
-                cadastro['Data'] = time.strftime('%d/%m/%Y')
-                cadastro['HoraEntrada'] = time.strftime('%H:%M:%S')
+        cadastro['Telefone'] = input(f'Telefone do {tipo}: ')
+        while not validaTelefone(cadastro['Telefone']):
+            print('Telefone inválido')
+            cadastro['Telefone'] = input(f'Reenvie telefone do {tipo}: ')
 
-                add_unique_row_csv(path, cadastro)
-                # Cadastro: \n', cadastro)
-                print('Cadastro realizado com sucesso!\n')
-                continue
+        cadastro['Confirmado'] = confirmacaoTerminal(cadastro)
+        if cadastro['Confirmado']:
+            print('Cadastro confirmado. Aguarde enquanto realizamos o cadastro...')
+            cadastro['Data'] = time.strftime('%d/%m/%Y')
+            cadastro['HoraEntrada'] = time.strftime('%H:%M:%S')
+
+            serializaCadastro(caminho, cadastro)
+
+            print('Cadastro realizado com sucesso!\n')
+        else:
             print('Dados incorretos. Cadastro cancelado. Reinicie o processo\n\n')
