@@ -51,9 +51,8 @@ def liberate(path, type):
         CPF = format_cpf(cpf_input)  # Assuming format_cpf formats correctly
 
         if cpf_input == '':
-            print(
-                f'{type} Não possui Cadastro com CPF. Necessita de atualização manual.')
-            print('Horario de saída do {type}: ' + time.strftime('%H:%M:%S'))
+            print(f'{type} Não possui Cadastro com CPF. Necessita de atualização manual.')
+            print(f'Horario de saída do {type}: ' + time.strftime('%H:%M:%S'))
 
         elif not validate_cpf(CPF):
             print('CPF inválido. Tente novamente.')
@@ -68,7 +67,7 @@ def liberate(path, type):
             print(f'{get_name(result_df, result_df.index[0])} já saiu. Saída NÃO autorizada.\nTente novamente.')
             continue
         name = get_name(result_df, result_df.index[0])
-        verify_exit = input(f'Confirma a saída de {name}? (s/n):').strip().lower()
+        verify_exit = input(f'Confirma a saída de {name}? (s/n): ').strip().lower()
         if verify_exit in ['', 's', 'y', 'sim', 'yes']:
             df = pd.read_csv(path, sep=';')
             df.loc[result_df.index[0], 'HoraSaida'] = time.strftime('%H:%M:%S') #Setting an item of incompatible dtype is deprecated and will raise an error in a future version of pandas. Value '15:47:54' has dtype incompatible with float64, please explicitly cast to a compatible dtype first.
