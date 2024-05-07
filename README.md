@@ -3,6 +3,7 @@
 instalar python https://www.python.org/downloads/
 
 instalar git https://git-scm.com/downloads
+
 abrir o programa powershell
 
 rodar os seguintes comandos:
