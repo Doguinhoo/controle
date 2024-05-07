@@ -11,6 +11,8 @@ rodar o seguinte comando:
 
 ```
 git clone https://github.com/Doguinhoo/controle
+
+cd controle
 ```
 
 abrir mais um powershell
