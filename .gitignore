@@ -5,3 +5,4 @@ Voluntarios
 build
 dist
 *.spec
+*.xlsx
