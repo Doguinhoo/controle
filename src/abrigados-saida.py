@@ -1,4 +1,6 @@
-from deps import liberate, PATH_REF
+from deps import liberaTerminal, PATH_ABR
 
 if __name__ == '__main__':
-    liberate(PATH_REF, 'abrigado')
+    print('SAÍDA DE ABRIGADO')
+    while True:
+        liberaTerminal(PATH_ABR, 'abrigado')

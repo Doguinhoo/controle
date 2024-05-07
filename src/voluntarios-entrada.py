@@ -1,4 +1,6 @@
-from deps import cadastro, PATH_VOL
+from deps import cadastroTerminal, PATH_VOL
 
 if __name__ == '__main__':
-    cadastro(PATH_VOL, 'voluntário')
+    print('CADASTRO DE VOLUNTÁRIO')
+    while True:
+        cadastroTerminal(PATH_VOL, "voluntário")
