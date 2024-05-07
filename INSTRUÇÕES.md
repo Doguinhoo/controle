@@ -11,27 +11,27 @@ rodar os seguintes comandos:
 ```
 pip install pandas
 
-git clone https://github.com/Doguinhoo/controle 
+git clone https://github.com/Doguinhoo/controle
 ```
 
-Arraste o voluntários.csv para a pasta Controle-Enchente/Dados/voluntarios
+Arraste o voluntários.csv para a pasta controle/Dados-Enchente/voluntarios
 
 abrir mais um powershell
 
 Em ambos usar o comando
 
 ```
-cd controle/Controle-Enchente
+cd controle/src
 ```
 
 no primeiro usar o comando:
 
 ```
-python Voluntarios-entrada.py
+python voluntarios-entrada.py
 ```
 
 no segunto usar o comando:
 
 ```
-python Voluntarios-saida.py
+python voluntarios-saida.py
 ```

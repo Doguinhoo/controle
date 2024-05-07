@@ -3,10 +3,11 @@ import re
 import time
 
 
-PATH = './Dados-Enchente/'
+PATH = '../Dados-Enchente/'
 
 PATH_VOL = PATH + 'Voluntarios/voluntarios.csv'
 PATH_REF = PATH + 'Refugiados/refugiados.csv'
+
 
 def check_row_using_cpf(path, cpf) -> pd.DataFrame:
     df = pd.read_csv(path, sep=';', dtype={'CPF': str})
@@ -16,8 +17,10 @@ def check_row_using_cpf(path, cpf) -> pd.DataFrame:
         return match.iloc[[-1]]
     return match
 
+
 def get_name(df, index):
     return df.loc[index, 'Nome'] if not df.empty else ''
+
 
 def liberate(path, type):
     print(f'SAÍDA DE {type.upper()}')
@@ -28,24 +31,27 @@ def liberate(path, type):
         CPF = format_cpf(cpf_input)  # Assuming format_cpf formats correctly
 
         if cpf_input == '':
-            print(f'{type} Não possui Cadastro com CPF. Necessita de atualização manual.')
+            print(
+                f'{type} Não possui Cadastro com CPF. Necessita de atualização manual.')
             print('Horario de saída do {type}: ' + time.strftime('%H:%M:%S'))
 
         elif not validate_cpf(CPF):
             print('CPF inválido. Tente novamente.')
             continue
 
-
         result_df = check_row_using_cpf(path, CPF)
         if result_df.empty:
-            print(f'CPF {CPF} não encontrado. Saída NÃO autorizada.\nTente novamente.')
+            print(
+                f'CPF {CPF} não encontrado. Saída NÃO autorizada.\nTente novamente.')
             continue
 
         if result_df['HoraSaida'].notnull().all():
-            print(f'{get_name(result_df, result_df.index[0])} já saiu. Saída NÃO autorizada.\nTente novamente.')
+            print(f'{get_name(
+                result_df, result_df.index[0])} já saiu. Saída NÃO autorizada.\nTente novamente.')
             continue
         name = get_name(result_df, result_df.index[0])
-        verify_exit = input(f'Confirma a saída de {name}? (s/n): ').strip().lower()
+        verify_exit = input(f'Confirma a saída de {
+                            name}? (s/n): ').strip().lower()
         if verify_exit in ['', 's', 'y', 'sim', 'yes']:
             df = pd.read_csv(path, sep=';')
             df.loc[result_df.index[0], 'HoraSaida'] = time.strftime('%H:%M:%S')
@@ -55,8 +61,9 @@ def liberate(path, type):
             print('Saída não confirmada. Retomando início...')
 
 
-def format_cpf(cpf:str):
+def format_cpf(cpf: str):
     return cpf[:3] + '.' + cpf[3:6] + '.' + cpf[6:9] + '-' + cpf[9:11]
+
 
 def validate_cpf(cpf: str) -> bool:
     """ Efetua a validação do CPF, tanto formatação quando dígito verificadores.
@@ -106,11 +113,13 @@ def validate_cpf(cpf: str) -> bool:
 
     return True
 
+
 def add_row_csv(path, row: dict):
     df = pd.read_csv(path, sep=';')
     new_row = pd.DataFrame([row.values()], columns=row.keys())
     df = pd.concat([df, new_row], ignore_index=True)
     df.to_csv(path, index=False, sep=';')
+
 
 def add_unique_row_csv(path, row):
     if check_row_using_cpf(path, row['CPF']).empty:
@@ -161,26 +170,27 @@ def cadastro(path, type):
                 cadastro['CPF'] = format_cpf(cpf)
                 while not validate_cpf(cadastro['CPF']):
                     print('CPF inválido')
-                    cadastro['CPF']  = format_cpf(input(f'Reenvie CPF do {type}: '))
+                    cadastro['CPF'] = format_cpf(
+                        input(f'Reenvie CPF do {type}: '))
             else:
                 cadastro['CPF'] = cpf
 
-            cadastro['Profissao']   = input(f'Profissão do {type}: ')
-            cadastro['Atuacao']     = input(f'Área de atuação do {type}: ')
+            cadastro['Profissao'] = input(f'Profissão do {type}: ')
+            cadastro['Atuacao'] = input(f'Área de atuação do {type}: ')
 
-            cadastro['Telefone']    = input(f'Telefone do {type}: ')
+            cadastro['Telefone'] = input(f'Telefone do {type}: ')
             while not validate_telefone(cadastro['Telefone']):
                 print('Telefone inválido')
                 cadastro['Telefone'] = input(f'Reenvie telefone do {type}: ')
 
-            cadastro['Confirmado']  = confirmacao(cadastro)
+            cadastro['Confirmado'] = confirmacao(cadastro)
             if cadastro['Confirmado']:
                 print('Cadastro confirmado. Aguarde enquanto realizamos o cadastro...')
-                cadastro['Data']        = time.strftime('%d/%m/%Y')
+                cadastro['Data'] = time.strftime('%d/%m/%Y')
                 cadastro['HoraEntrada'] = time.strftime('%H:%M:%S')
 
                 add_unique_row_csv(path, cadastro)
-                print('Cadastro realizado com sucesso!\n') # Cadastro: \n', cadastro)
+                # Cadastro: \n', cadastro)
+                print('Cadastro realizado com sucesso!\n')
                 continue
             print('Dados incorretos. Cadastro cancelado. Reinicie o processo\n\n')
-
