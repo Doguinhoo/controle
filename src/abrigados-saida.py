@@ -1,6 +1,6 @@
-from deps import liberaTerminal, PATH_REF
+from deps import liberaTerminal, PATH_ABR
 
 if __name__ == '__main__':
-    print('SAÍDA DE REFUGIADO')
+    print('SAÍDA DE ABRIGADO')
     while True:
-        liberaTerminal(PATH_REF, 'refugiado')
+        liberaTerminal(PATH_ABR, 'abrigado')

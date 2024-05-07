@@ -6,7 +6,7 @@ import os
 PATH = './'
 
 PATH_VOL = PATH + 'Voluntarios/voluntarios.csv'
-PATH_REF = PATH + 'Abrigados/abrigados.csv'
+PATH_ABR = PATH + 'Abrigados/abrigados.csv'
 
 
 def create_empty_csv(path):

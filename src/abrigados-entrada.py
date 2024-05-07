@@ -1,6 +1,6 @@
-from deps import cadastroTerminal, PATH_REF
+from deps import cadastroTerminal, PATH_ABR
 
 if __name__ == '__main__':
-    print('CADASTRO DE REFUGIADO')
+    print('CADASTRO DE ABRIGADO')
     while True:
-        cadastroTerminal(PATH_REF, "refugiado")
+        cadastroTerminal(PATH_ABR, "abrigado")
