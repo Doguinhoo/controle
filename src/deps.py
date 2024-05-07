@@ -11,14 +11,13 @@ PATH_REF = PATH + 'Abrigados/abrigados.csv'
 def create__empty_csv(path):
         os.makedirs(os.path.dirname(path), exist_ok=True)
         df = pd.DataFrame(columns=[
-            'Nome', 
-            'CPF', 
+            'Nome',
+            'CPF',
             'Profissao',
             'Atuacao',
             'Telefone',
-            'Data',
-            'HoraEntrada',
-            'HoraSaida',
+            'Entrada',
+            'Saida',
             'Confirmado'
             ]
             )
@@ -63,14 +62,14 @@ def liberate(path, type):
             print(f'CPF {CPF} não encontrado. Saída NÃO autorizada.\nTente novamente.')
             continue
 
-        if result_df['HoraSaida'].notnull().all():
+        if result_df['Saida'].notnull().all():
             print(f'{get_name(result_df, result_df.index[0])} já saiu. Saída NÃO autorizada.\nTente novamente.')
             continue
         name = get_name(result_df, result_df.index[0])
         verify_exit = input(f'Confirma a saída de {name}? (s/n): ').strip().lower()
         if verify_exit in ['', 's', 'y', 'sim', 'yes']:
             df = pd.read_csv(path, sep=';')
-            df.loc[result_df.index[0], 'HoraSaida'] = time.strftime('%H:%M:%S') #Setting an item of incompatible dtype is deprecated and will raise an error in a future version of pandas. Value '15:47:54' has dtype incompatible with float64, please explicitly cast to a compatible dtype first.
+            df.loc[result_df.index[0], 'Saida'] = time.strftime('%d/%m/%Y %H:%M:%S') #Setting an item of incompatible dtype is deprecated and will raise an error in a future version of pandas. Value '15:47:54' has dtype incompatible with float64, please explicitly cast to a compatible dtype first.
             df.to_csv(path, sep=';', index=False)
             print('Saída confirmada')
         else:
@@ -170,9 +169,8 @@ def cadastro(path, type):
             'Profissao': '',
             'Atuacao': '',
             'Telefone': '',
-            'Data': None,
-            'HoraEntrada': None,
-            'HoraSaida': None,
+            'Entrada': None,
+            'Saida': None,
             'Confirmado': False,
         }
         print(f'Cadastro de {type.upper()}')
@@ -202,8 +200,7 @@ def cadastro(path, type):
             cadastro['Confirmado'] = confirmacao(cadastro)
             if cadastro['Confirmado']:
                 print('Cadastro confirmado. Aguarde enquanto realizamos o cadastro...')
-                cadastro['Data'] = time.strftime('%d/%m/%Y')
-                cadastro['HoraEntrada'] = time.strftime('%H:%M:%S')
+                cadastro['Entrada'] = time.strftime('%d/%m/%Y %H:%M:%S')
 
                 add_unique_row_csv(path, cadastro)
                 # Cadastro: \n', cadastro)
