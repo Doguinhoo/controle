@@ -1,6 +1,14 @@
 # controle
-
-# Caso não tenha python instalado
+# Regras para Colaboração
+- Todos os MRs de alteração inicialmente devem ser enviados para a branch develop;
+- MRs para branch main devem ser feitas a partir da develop e somente executados ao finalizar uma versão nova;
+- Apos merge da develop para main, deve-se gerar uma versão nova da aplicação (Pode pedir pra @MarnieGrenat caso esteja muito ocupado);
+- Evite autorizar o próprio MR;
+- Documente todas as alterações em *issues* para termos controle das alterações;
+- Tente dividir para conquistar as tarefas, para que outros desenvolvedores possam te ajudar a finalizar a issue mais rápido.
+  
+# Como rodar a aplicação
+## Caso não tenha python instalado
 
 
 instalar git https://git-scm.com/downloads
@@ -29,7 +37,7 @@ no segunto usar o comando:
 ./src/voluntarios-saida.exe
 ```
 
-# Caso pretenda usar python
+## Caso pretenda usar python
 
 instalar python https://www.python.org/downloads/
 
