@@ -21,8 +21,7 @@ def create__empty_csv(path):
         'Confirmado'
         ]
         )
-
-        df.to_csv(path)
+    df.to_csv(path)
 
 def check_row_using_cpf(path, cpf) -> pd.DataFrame:
     if not os.path.exists(path):
@@ -188,27 +187,42 @@ def cadastroTerminal(caminho, tipo):
 
     while not cadastro['Confirmado']:
         print('\n\n' + 20 * '-')
-        print(f'Novo cadastro de {tipo}')
+        print(f'Novo cadastro de {tipo} (digite "CANCEL" para cancelar o cadastro)')
         cadastro['Nome'] = input(f'Nome do {tipo}: ')
+        if checkCancel(cadastro['Nome']):
+            return
 
-        cpf = input(f'CPF do {tipo}: ')
+        cpf = input(f'CPF do {tipo}: ') 
+        if checkCancel(cpf):
+            return
         if cpf != '':
             cadastro['CPF'] = format_cpf(cpf)
             while not validate_cpf(cadastro['CPF']):
                 print('CPF inválido')
                 cadastro['CPF'] = format_cpf(
                     input(f'Reenvie CPF do {tipo}: '))
+                
+                if checkCancel(cadastro['CPF']): 
+                    return
+            
+                    
         else:
             cadastro['CPF'] = cpf
-
         cadastro['Profissao'] = input(f'Profissão do {tipo}: ')
+        if checkCancel(cadastro['Profissao']):
+            return
         cadastro['Atuacao'] = input(f'Área de atuação do {tipo}: ')
-
+        if checkCancel(cadastro['Atuacao']):
+            return
         cadastro['Telefone'] = input(f'Telefone do {tipo}: ')
+        if checkCancel(cadastro['Telefone']):
+            return
         while not validaTelefone(cadastro['Telefone']):
             print('Telefone inválido')
             cadastro['Telefone'] = input(f'Reenvie telefone do {tipo}: ')
-
+            if checkCancel(cadastro['Telefone']):
+                return
+            
         cadastro['Confirmado'] = confirmacaoTerminal(cadastro)
         if cadastro['Confirmado']:
             print('Cadastro confirmado. Aguarde enquanto realizamos o cadastro...')
@@ -219,3 +233,9 @@ def cadastroTerminal(caminho, tipo):
             print('Cadastro realizado com sucesso!\n')
         else:
             print('Dados incorretos. Cadastro cancelado. Reinicie o processo\n\n')
+
+def checkCancel(entry):
+    if entry == "CANCEL": 
+        return True
+    else:
+        return False
