@@ -153,7 +153,12 @@ def validate_cpf(cpf: str) -> bool:
 
 
 def serializaCadastro(caminho, cadastro: dict):
-    df = pd.read_csv(caminho, sep=';')
+    try:
+        df = pd.read_csv(caminho, sep=';')
+    except pd.errors.EmptyDataError:
+        create_empty_csv(caminho)
+        df = pd.read_csv(caminho, sep=';')
+
     new_row = pd.DataFrame([cadastro.values()], columns=cadastro.keys())
     df = pd.concat([df, new_row], ignore_index=True)
     df.to_csv(caminho, index=False, sep=';')

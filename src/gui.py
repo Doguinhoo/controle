@@ -79,5 +79,44 @@ def entrada(tipo):
     janela.mainloop()
 
 
+def saida(tipo):
+    match tipo:
+        case 'voluntário': caminho = deps.PATH_VOL
+        case 'abrigado': caminho = deps.PATH_ABR
+
+    janela = tk.Tk()
+    janela.resizable(False, False)
+    janela.title(f"Saída de {tipo}")
+
+    fonte = font.Font(size=14)
+    grade = tk.Frame(master=janela)
+
+    tk.Label(master=grade, text="CPF:", font=fonte).grid(row=0, column=0)
+    cpf = tk.Entry(master=grade, font=fonte)
+    cpf.grid(row=0, column=1)
+
+    grade.pack()
+
+    msg = tk.Label(master=janela, font=fonte)
+    msg.pack()
+
+    def enviarSaida(evento):
+        match deps.libera(caminho, deps.format_cpf(cpf.get())):
+            case (_, "não encontrado"):
+                msg.config(text=f"{tipo} não encontrado", bg="red")
+            case (nome, "já saiu"):
+                msg.config(text=f"{nome} já saiu", bg="red")
+            case (nome, "confirmado"):
+                msg.config(text=f"Saída de {
+                           nome} marcada com sucesso", bg="green")
+
+    tk.Button(master=janela, text="Enviar",
+              command=lambda: enviarSaida(None), font=fonte).pack()
+
+    janela.bind("<Return>", enviarSaida)
+
+    janela.mainloop()
+
+
 if __name__ == "__main__":
-    entrada("voluntário")
+    saida("voluntário")
