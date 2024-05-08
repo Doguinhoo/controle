@@ -15,33 +15,30 @@ def entrada(tipo):
     janela.title(f"Entrada de {tipo}")
 
     fonte = font.Font(size=14)
-    agl = tk.Frame(master=janela)
-    etiquetas = tk.Frame(master=agl)
-    entradas = tk.Frame(master=agl)
+    grade = tk.Frame(master=janela)
 
-    tk.Label(master=etiquetas, text="Nome:", font=fonte).pack()
-    nome = tk.Entry(master=entradas, font=fonte)
-    nome.pack()
+    tk.Label(master=grade, text="Nome:", font=fonte).grid(row=0, column=0)
+    nome = tk.Entry(master=grade, font=fonte)
+    nome.grid(row=0, column=1)
 
-    tk.Label(master=etiquetas, text="CPF:", font=fonte).pack()
-    cpf = tk.Entry(master=entradas, font=fonte)
-    cpf.pack()
+    tk.Label(master=grade, text="CPF:", font=fonte).grid(row=1, column=0)
+    cpf = tk.Entry(master=grade, font=fonte)
+    cpf.grid(row=1, column=1)
 
-    tk.Label(master=etiquetas, text="Telefone:", font=fonte).pack()
-    telefone = tk.Entry(master=entradas, font=fonte)
-    telefone.pack()
+    tk.Label(master=grade, text="Telefone:", font=fonte).grid(row=2, column=0)
+    telefone = tk.Entry(master=grade, font=fonte)
+    telefone.grid(row=2, column=1)
 
-    tk.Label(master=etiquetas, text="Profissão:", font=fonte).pack()
-    profissao = tk.Entry(master=entradas, font=fonte)
-    profissao.pack()
+    tk.Label(master=grade, text="Profissão:", font=fonte).grid(row=3, column=0)
+    profissao = tk.Entry(master=grade, font=fonte)
+    profissao.grid(row=3, column=1)
 
-    tk.Label(master=etiquetas, text="Área de atuação:", font=fonte).pack()
-    area = tk.Entry(master=entradas, font=fonte)
-    area.pack()
+    tk.Label(master=grade, text="Área de atuação:",
+             font=fonte).grid(row=4, column=0)
+    area = tk.Entry(master=grade, font=fonte)
+    area.grid(row=4, column=1)
 
-    etiquetas.pack(side=tk.LEFT)
-    entradas.pack(side=tk.LEFT)
-    agl.pack()
+    grade.pack()
 
     msg = tk.Label(master=janela, font=fonte)
     msg.pack()
