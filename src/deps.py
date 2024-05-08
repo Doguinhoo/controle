@@ -205,12 +205,10 @@ def check_existing_person(csv_db, cadastro, data_type):
 
 
 def finalize_cadastro(caminho, cadastro):
-    print('Cadastro confirmado. Aguarde enquanto realizamos o cadastro...')
     cadastro['Entrada'] = time.strftime('%d/%m/%Y %H:%M:%S')
+    cadastro['Confirmado'] = True
 
     serializaCadastro(caminho, cadastro)
-
-    print('Cadastro realizado com sucesso!\n')
 
 
 def input_cpf(cadastro, tipo):
@@ -235,9 +233,8 @@ def input_telefone(cadastro, tipo):
 
     return cadastro
 
+
 # pergunta os dados no terminal e realiza o cadastro de uma pessoa
-
-
 def cadastroTerminal(caminho, tipo):
     cadastro = {
         'Nome': '',
@@ -297,6 +294,8 @@ def cadastroTerminal(caminho, tipo):
 
         cadastro['Confirmado'] = confirmacaoTerminal(cadastro)
         if cadastro['Confirmado']:
+            print('Cadastro confirmado. Aguarde enquanto realizamos o cadastro...')
             finalize_cadastro(caminho, cadastro)
+            print('Cadastro realizado com sucesso!\n')
         else:
             print('Dados incorretos. Cadastro cancelado. Reinicie o processo\n\n')
