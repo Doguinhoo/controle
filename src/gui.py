@@ -118,5 +118,24 @@ def saida(tipo):
     janela.mainloop()
 
 
+def janelaDeControle(tipo):
+    janela = tk.Tk()
+    janela.resizable(False, False)
+    janela.geometry("300x200")
+    janela.title(f"Controde de {tipo}")
+
+    fonte = font.Font(size=20)
+    grade = tk.Frame(master=janela)
+
+    tk.Button(master=grade, text="Entrada", font=fonte,
+              command=lambda: entrada(tipo)).grid(row=0, column=0)
+    tk.Button(master=grade, text="Saída", font=fonte,
+              command=lambda: saida(tipo)).grid(row=0, column=1)
+
+    grade.place(relx=0.5, rely=0.5, anchor='c')
+
+    janela.mainloop()
+
+
 if __name__ == "__main__":
-    saida("voluntário")
+    janelaDeControle("voluntário")

@@ -23,7 +23,7 @@ def create_empty_csv(path):
     ]
     )
 
-    df.to_csv(path)
+    df.to_csv(path, sep=";", index=False)
 
 
 def check_row_using_cpf(path, cpf) -> pd.DataFrame:
