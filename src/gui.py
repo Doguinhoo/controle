@@ -18,24 +18,24 @@ def entrada(tipo):
     grade = tk.Frame(master=janela)
 
     tk.Label(master=grade, text="Nome:", font=fonte).grid(row=0, column=0)
-    nome = tk.Entry(master=grade, font=fonte)
+    nome = tk.Entry(master=grade, font=fonte, width=50)
     nome.grid(row=0, column=1)
 
     tk.Label(master=grade, text="CPF:", font=fonte).grid(row=1, column=0)
-    cpf = tk.Entry(master=grade, font=fonte)
+    cpf = tk.Entry(master=grade, font=fonte, width=50)
     cpf.grid(row=1, column=1)
 
     tk.Label(master=grade, text="Telefone:", font=fonte).grid(row=2, column=0)
-    telefone = tk.Entry(master=grade, font=fonte)
+    telefone = tk.Entry(master=grade, font=fonte, width=50)
     telefone.grid(row=2, column=1)
 
     tk.Label(master=grade, text="Profissão:", font=fonte).grid(row=3, column=0)
-    profissao = tk.Entry(master=grade, font=fonte)
+    profissao = tk.Entry(master=grade, font=fonte, width=50)
     profissao.grid(row=3, column=1)
 
     tk.Label(master=grade, text="Área de atuação:",
              font=fonte).grid(row=4, column=0)
-    area = tk.Entry(master=grade, font=fonte)
+    area = tk.Entry(master=grade, font=fonte, width=50)
     area.grid(row=4, column=1)
 
     grade.pack()
@@ -63,6 +63,7 @@ def entrada(tipo):
                 cpf.config(bg="white")
                 telefone.delete(0, tk.END)
                 telefone.config(bg="white")
+                profissao.delete(0, tk.END)
                 area.delete(0, tk.END)
             case (False, erros):
                 for erro in erros:
@@ -71,7 +72,7 @@ def entrada(tipo):
                         case "telefone": telefone.config(bg="red")
 
     tk.Button(master=janela, text="Enviar",
-              command=enviarEntrada, font=fonte).pack()
+              command=lambda: enviarEntrada(None), font=fonte).pack()
 
     janela.bind("<Return>", enviarEntrada)
 
