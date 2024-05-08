@@ -205,10 +205,24 @@ def check_existing_person(csv_db, cadastro, data_type):
 
 
 def finalize_cadastro(caminho, cadastro):
-    cadastro['Entrada'] = time.strftime('%d/%m/%Y %H:%M:%S')
-    cadastro['Confirmado'] = True
+    resultado = True
+    erros = []
 
-    serializaCadastro(caminho, cadastro)
+    if not validate_cpf(cadastro['CPF']):
+        resultado = False
+        erros.insert(0, "cpf")
+    if not validaTelefone(cadastro['Telefone']):
+        resultado = False
+        erros.insert(1, "telefone")
+
+    if resultado:
+        cadastro['Entrada'] = time.strftime('%d/%m/%Y %H:%M:%S')
+        cadastro['Confirmado'] = True
+        cadastro['Telefone'] = int(cadastro['Telefone'])
+
+        serializaCadastro(caminho, cadastro)
+
+    return (resultado, erros)
 
 
 def input_cpf(cadastro, tipo):

@@ -27,6 +27,10 @@ def entrada(tipo):
     cpf = tk.Entry(master=entradas, font=fonte)
     cpf.pack()
 
+    tk.Label(master=etiquetas, text="Telefone:", font=fonte).pack()
+    telefone = tk.Entry(master=entradas, font=fonte)
+    telefone.pack()
+
     tk.Label(master=etiquetas, text="Profissão:", font=fonte).pack()
     profissao = tk.Entry(master=entradas, font=fonte)
     profissao.pack()
@@ -35,15 +39,14 @@ def entrada(tipo):
     area = tk.Entry(master=entradas, font=fonte)
     area.pack()
 
-    tk.Label(master=etiquetas, text="Telefone:", font=fonte).pack()
-    telefone = tk.Entry(master=entradas, font=fonte)
-    telefone.pack()
-
     etiquetas.pack(side=tk.LEFT)
     entradas.pack(side=tk.LEFT)
     agl.pack()
 
-    def enviarEntrada():
+    msg = tk.Label(master=janela, font=fonte)
+    msg.pack()
+
+    def enviarEntrada(evento):
         entrada = {
             'Nome': nome.get(),
             'CPF': deps.format_cpf(cpf.get()),
@@ -55,9 +58,25 @@ def entrada(tipo):
             'Confirmado': False,
         }
 
-        deps.finalize_cadastro(caminho, entrada)
+        match deps.finalize_cadastro(caminho, entrada):
+            case (True, _):
+                msg.config(text="Cadastro registrado", bg="green")
+                nome.delete(0, tk.END)
+                cpf.delete(0, tk.END)
+                cpf.config(bg="white")
+                telefone.delete(0, tk.END)
+                telefone.config(bg="white")
+                area.delete(0, tk.END)
+            case (False, erros):
+                for erro in erros:
+                    match erro:
+                        case "cpf": cpf.config(bg="red")
+                        case "telefone": telefone.config(bg="red")
 
-    tk.Button(text="Enviar", command=enviarEntrada, font=fonte).pack()
+    tk.Button(master=janela, text="Enviar",
+              command=enviarEntrada, font=fonte).pack()
+
+    janela.bind("<Return>", enviarEntrada)
 
     janela.mainloop()
 
