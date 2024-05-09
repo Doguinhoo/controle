@@ -3,10 +3,10 @@ import re
 import time
 import os
 
-PATH = './'
+PATH_DADOS = '../Dados-Enchente/'
 
-PATH_VOL = PATH + 'Voluntarios/voluntarios.csv'
-PATH_ABR = PATH + 'Abrigados/abrigados.csv'
+PATH_VOL = PATH_DADOS + 'Voluntarios/voluntarios.csv'
+PATH_ABR = PATH_DADOS + 'Abrigados/abrigados.csv'
 
 
 def create_empty_csv(path):
