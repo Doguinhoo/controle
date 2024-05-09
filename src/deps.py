@@ -3,12 +3,13 @@ import re
 import time
 import os
 
-PATH = './'
+PATH_DADOS = '../Dados-Enchente/'
 
-PATH_VOL = PATH + 'Voluntarios/voluntarios.csv'
-PATH_ABR = PATH + 'Abrigados/abrigados.csv'
+PATH_VOL = PATH_DADOS + 'Voluntarios/voluntarios.csv'
+PATH_ABR = PATH_DADOS + 'Abrigados/abrigados.csv'
 
-def create__empty_csv(path):
+
+def create_empty_csv(path):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     df = pd.DataFrame(columns=[
         'Nome',
@@ -18,18 +19,14 @@ def create__empty_csv(path):
         'Telefone',
         'Entrada',
         'Saida',
-        'Confirmado'
-        ]
-        )
+    ]
+    )
 
-        df.to_csv(path)
+    df.to_csv(path, sep=";", index=False)
+
 
 def check_row_using_cpf(path, cpf) -> pd.DataFrame:
-    if not os.path.exists(path):
-        create_empty_csv(path)
-        return pd.DataFrame()
-    else:
-        df = pd.read_csv(path, sep=';', dtype={'CPF': str})
+    df = carrega_csv(path)
     df['CPF'] = df['CPF'].str.strip()  # Clean any whitespace
     match = df[df['CPF'] == cpf]
     if not match.empty:
@@ -40,8 +37,9 @@ def check_row_using_cpf(path, cpf) -> pd.DataFrame:
 def get_name(df, index):
     return df.loc[index, 'Nome'] if not df.empty else ''
 
-
 # pergunta um cpf para liberação pelo terminal e o retorna
+
+
 def liberaTerminal(path, tipo):
     while True:
         print('\n\n' + 20 * '-')
@@ -88,12 +86,13 @@ def libera(path, cpf):
     if resultado_df['Saida'].notnull().all():
         return (nome, "já saiu")
 
-    df = pd.read_csv(path, sep=';')
+    df = carrega_csv(path)
     # Setting an item of incompatible dtype is deprecated and will raise an error in a future version of pandas. Value '15:47:54' has dtype incompatible with float64, please explicitly cast to a compatible dtype first.
     df.loc[resultado_df.index[0], 'Saida'] = time.strftime('%d/%m/%Y %H:%M:%S')
     df.to_csv(path, sep=';', index=False)
-    
+
     return (nome, "confirmado")
+
 
 def format_cpf(cpf: str):
     return cpf[:3] + '.' + cpf[3:6] + '.' + cpf[6:9] + '-' + cpf[9:11]
@@ -149,17 +148,29 @@ def validate_cpf(cpf: str) -> bool:
 
 
 def serializaCadastro(caminho, cadastro: dict):
-    df = pd.read_csv(caminho, sep=';')
+    df = carrega_csv(caminho)
+
     new_row = pd.DataFrame([cadastro.values()], columns=cadastro.keys())
     df = pd.concat([df, new_row], ignore_index=True)
     df.to_csv(caminho, index=False, sep=';')
 
 
+def carrega_csv(caminho):
+    if not os.path.exists(caminho):
+        create_empty_csv(caminho)
+    try:
+        return pd.read_csv(caminho, sep=';', dtype=str)
+    except pd.errors.EmptyDataError:
+        create_empty_csv(caminho)
+        return pd.read_csv(caminho, sep=';', dtype=str)
+
+
 def validaTelefone(telefone: str) -> bool:
     return telefone.isdigit() and len(telefone) == 11
 
-
 # pergunta no terminal se os dados da pessoa estão corretos
+
+
 def confirmacaoTerminal(cadastro):
     print(f'''
 Verifique se as informações estão corretas:
@@ -173,6 +184,67 @@ Confirma? (s/n): ''')
     return resposta in ['s', 'sim', 'yes', 'y', '']
 
 
+def check_existing_person(csv_db, cadastro, data_type):
+    person_found = False
+
+    existing_person_rows = csv_db.loc[csv_db[data_type] == cadastro[data_type]]
+    existing_person_rows_last_entry = existing_person_rows.iloc[-1:]
+
+    if existing_person_rows_last_entry.empty:
+        person_found = False
+    else:
+        cadastro['Nome'] = existing_person_rows_last_entry['Nome'].values[0]
+        cadastro['CPF'] = existing_person_rows_last_entry['CPF'].values[0]
+        cadastro['Profissao'] = existing_person_rows_last_entry['Profissao'].values[0]
+        cadastro['Atuacao'] = existing_person_rows_last_entry['Atuacao'].values[0]
+        cadastro['Telefone'] = existing_person_rows_last_entry['Telefone'].values[0]
+        person_found = True
+
+    return cadastro, person_found
+
+
+def finalize_cadastro(caminho, cadastro):
+    resultado = True
+    erros = []
+
+    if not validate_cpf(cadastro['CPF']):
+        resultado = False
+        erros.insert(0, "cpf")
+    if not validaTelefone(cadastro['Telefone']):
+        resultado = False
+        erros.insert(1, "telefone")
+
+    if resultado:
+        cadastro['Entrada'] = time.strftime('%d/%m/%Y %H:%M:%S')
+
+        serializaCadastro(caminho, cadastro)
+
+    return (resultado, erros)
+
+
+def input_cpf(cadastro, tipo):
+    cpf = input(f'CPF do {tipo}: ')
+    if cpf != '':
+        cadastro['CPF'] = format_cpf(cpf)
+        while not validate_cpf(cadastro['CPF']):
+            print('CPF inválido')
+            cadastro['CPF'] = format_cpf(
+                input(f'Reenvie CPF do {tipo}: '))
+    else:
+        cadastro['CPF'] = cpf
+
+    return cadastro
+
+
+def input_telefone(cadastro, tipo):
+    cadastro['Telefone'] = input(f'Telefone do {tipo}: ')
+    while not validaTelefone(cadastro['Telefone']):
+        print('Telefone inválido')
+        cadastro['Telefone'] = input(f'Reenvie telefone do {tipo}: ')
+
+    return cadastro
+
+
 # pergunta os dados no terminal e realiza o cadastro de uma pessoa
 def cadastroTerminal(caminho, tipo):
     cadastro = {
@@ -183,39 +255,54 @@ def cadastroTerminal(caminho, tipo):
         'Telefone': '',
         'Entrada': None,
         'Saida': None,
-        'Confirmado': False,
     }
 
-    while not cadastro['Confirmado']:
+    csv_db = carrega_csv(caminho)
+
+    while True:
         print('\n\n' + 20 * '-')
         print(f'Novo cadastro de {tipo}')
-        cadastro['Nome'] = input(f'Nome do {tipo}: ')
 
-        cpf = input(f'CPF do {tipo}: ')
-        if cpf != '':
-            cadastro['CPF'] = format_cpf(cpf)
-            while not validate_cpf(cadastro['CPF']):
-                print('CPF inválido')
-                cadastro['CPF'] = format_cpf(
-                    input(f'Reenvie CPF do {tipo}: '))
+        cpf_found = False
+        phone_found = False
+
+        cadastro = input_cpf(cadastro, tipo)
+
+        cadastro, cpf_found = check_existing_person(csv_db, cadastro, "CPF")
+        if cpf_found:
+            print("CPF encontrado na base!")
+            if confirmacaoTerminal(cadastro):
+                finalize_cadastro(caminho, cadastro)
+                continue
         else:
-            cadastro['CPF'] = cpf
+            print("CPF não consta na base, prosseguir com o cadastro")
+
+            cpf = cadastro['CPF']
+            cadastro = input_telefone(cadastro, tipo)
+
+            cadastro, phone_found = check_existing_person(
+                csv_db, cadastro, "Telefone")
+            if phone_found:
+                print("Telefone encontrado na base!")
+                # Readiciona o CPF digita pois na base esta vazio
+                cadastro['CPF'] = cpf
+                if confirmacaoTerminal(cadastro):
+                    finalize_cadastro(caminho, cadastro)
+                    continue
+            else:
+                print("Telefone não consta na base, prosseguir com o cadastro")
+
+        if cpf_found:  # If pra nao repetir caso o usuario queira ajustar o cadastro encontrado
+            cadastro = input_telefone(cadastro, tipo)
+
+        cadastro['Nome'] = input(f'Nome do {tipo}: ')
 
         cadastro['Profissao'] = input(f'Profissão do {tipo}: ')
         cadastro['Atuacao'] = input(f'Área de atuação do {tipo}: ')
 
-        cadastro['Telefone'] = input(f'Telefone do {tipo}: ')
-        while not validaTelefone(cadastro['Telefone']):
-            print('Telefone inválido')
-            cadastro['Telefone'] = input(f'Reenvie telefone do {tipo}: ')
-
-        cadastro['Confirmado'] = confirmacaoTerminal(cadastro)
-        if cadastro['Confirmado']:
+        if confirmacaoTerminal(cadastro):
             print('Cadastro confirmado. Aguarde enquanto realizamos o cadastro...')
-            cadastro['Entrada'] = time.strftime('%d/%m/%Y %H:%M:%S')
-
-            serializaCadastro(caminho, cadastro)
-
+            finalize_cadastro(caminho, cadastro)
             print('Cadastro realizado com sucesso!\n')
         else:
             print('Dados incorretos. Cadastro cancelado. Reinicie o processo\n\n')
