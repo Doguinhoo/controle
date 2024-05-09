@@ -83,7 +83,7 @@ def libera(path, cpf):
 
     nome = get_name(resultado_df, resultado_df.index[0])
 
-    if resultado_df['Saida'].notnull().all():
+    if resultado_df['Saida'].iloc[0] != "":
         return (nome, "já saiu")
 
     df = carrega_csv(path)
@@ -159,10 +159,10 @@ def carrega_csv(caminho):
     if not os.path.exists(caminho):
         create_empty_csv(caminho)
     try:
-        return pd.read_csv(caminho, sep=';', dtype=str)
+        return pd.read_csv(caminho, sep=';', dtype=str, keep_default_na=False)
     except pd.errors.EmptyDataError:
         create_empty_csv(caminho)
-        return pd.read_csv(caminho, sep=';', dtype=str)
+        return pd.read_csv(caminho, sep=';', dtype=str, keep_default_na=False)
 
 
 def validaTelefone(telefone: str) -> bool:
