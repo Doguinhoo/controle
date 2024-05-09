@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinter import font
 import deps
 
 # tipo: "voluntário" ou "abrigado"
@@ -40,7 +39,7 @@ def entrada(tipo):
 
     grade.pack()
 
-    msg = tk.Label(master=janela)
+    msg = tk.Label(master=janela, wraplength=350)
     msg.pack()
 
     def enviarEntrada(evento):
@@ -97,7 +96,7 @@ def saida(tipo):
 
     grade.pack()
 
-    msg = tk.Label(master=janela)
+    msg = tk.Label(master=janela, wraplength=350)
     msg.pack()
 
     def enviarSaida(evento):
