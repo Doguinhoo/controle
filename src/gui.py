@@ -108,6 +108,7 @@ def saida(tipo):
             case (nome, "confirmado"):
                 msg.config(text=f"Saída de {
                            nome} marcada com sucesso", bg="green")
+                cpf.delete(0, tk.END)
 
     tk.Button(master=janela, text="Enviar",
               command=lambda: enviarSaida(None), font=fonte).pack()
