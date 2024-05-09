@@ -101,6 +101,8 @@ def saida(tipo):
 
     def enviarSaida(evento):
         match deps.libera(caminho, deps.format_cpf(cpf.get())):
+            case (_, "CPF inválido"):
+                msg.config(text=f"CPF do {tipo} inválido", bg="red")
             case (_, "não encontrado"):
                 msg.config(text=f"{tipo} não encontrado", bg="red")
             case (nome, "já saiu"):
