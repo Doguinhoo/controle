@@ -26,11 +26,7 @@ def create_empty_csv(path):
 
 
 def check_row_using_cpf(path, cpf) -> pd.DataFrame:
-    if not os.path.exists(path):
-        create_empty_csv(path)
-        return pd.DataFrame()
-    else:
-        df = pd.read_csv(path, sep=';', dtype=str)
+    df = carrega_csv(path)
     df['CPF'] = df['CPF'].str.strip()  # Clean any whitespace
     match = df[df['CPF'] == cpf]
     if not match.empty:
@@ -90,7 +86,7 @@ def libera(path, cpf):
     if resultado_df['Saida'].notnull().all():
         return (nome, "já saiu")
 
-    df = pd.read_csv(path, sep=';', dtype=str)
+    df = carrega_csv(path)
     # Setting an item of incompatible dtype is deprecated and will raise an error in a future version of pandas. Value '15:47:54' has dtype incompatible with float64, please explicitly cast to a compatible dtype first.
     df.loc[resultado_df.index[0], 'Saida'] = time.strftime('%d/%m/%Y %H:%M:%S')
     df.to_csv(path, sep=';', index=False)
@@ -152,11 +148,7 @@ def validate_cpf(cpf: str) -> bool:
 
 
 def serializaCadastro(caminho, cadastro: dict):
-    try:
-        df = pd.read_csv(caminho, sep=';', dtype=str)
-    except pd.errors.EmptyDataError:
-        create_empty_csv(caminho)
-        df = pd.read_csv(caminho, sep=';', dtype=str)
+    df = carrega_csv(caminho)
 
     new_row = pd.DataFrame([cadastro.values()], columns=cadastro.keys())
     df = pd.concat([df, new_row], ignore_index=True)
@@ -164,7 +156,13 @@ def serializaCadastro(caminho, cadastro: dict):
 
 
 def carrega_csv(caminho):
-    return pd.read_csv(caminho, sep=';', dtype=str)
+    if not os.path.exists(caminho):
+        create_empty_csv(caminho)
+    try:
+        return pd.read_csv(caminho, sep=';', dtype=str)
+    except pd.errors.EmptyDataError:
+        create_empty_csv(caminho)
+        return pd.read_csv(caminho, sep=';', dtype=str)
 
 
 def validaTelefone(telefone: str) -> bool:
