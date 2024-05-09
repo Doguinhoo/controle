@@ -65,8 +65,7 @@ def liberaTerminal(path, tipo):
                 print(f'{nome} já saiu. Saída NÃO autorizada.\nTente novamente.')
                 continue
             case (nome, "confirmado"):
-                verifica_saida = input(f'Confirma a saída de {
-                                       nome}? (s/n): ').strip().lower()
+                verifica_saida = input(f'Confirma a saída de {nome}? (s/n): ').strip().lower()
                 if verifica_saida in ['', 's', 'y', 'sim', 'yes']:
                     print('Saída confirmada')
                     break
