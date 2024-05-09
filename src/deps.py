@@ -19,7 +19,6 @@ def create_empty_csv(path):
         'Telefone',
         'Entrada',
         'Saida',
-        'Confirmado'
     ]
     )
 
@@ -31,7 +30,7 @@ def check_row_using_cpf(path, cpf) -> pd.DataFrame:
         create_empty_csv(path)
         return pd.DataFrame()
     else:
-        df = pd.read_csv(path, sep=';', dtype={'CPF': str})
+        df = pd.read_csv(path, sep=';', dtype=str)
     df['CPF'] = df['CPF'].str.strip()  # Clean any whitespace
     match = df[df['CPF'] == cpf]
     if not match.empty:
@@ -91,7 +90,7 @@ def libera(path, cpf):
     if resultado_df['Saida'].notnull().all():
         return (nome, "já saiu")
 
-    df = pd.read_csv(path, sep=';')
+    df = pd.read_csv(path, sep=';', dtype=str)
     # Setting an item of incompatible dtype is deprecated and will raise an error in a future version of pandas. Value '15:47:54' has dtype incompatible with float64, please explicitly cast to a compatible dtype first.
     df.loc[resultado_df.index[0], 'Saida'] = time.strftime('%d/%m/%Y %H:%M:%S')
     df.to_csv(path, sep=';', index=False)
@@ -154,10 +153,10 @@ def validate_cpf(cpf: str) -> bool:
 
 def serializaCadastro(caminho, cadastro: dict):
     try:
-        df = pd.read_csv(caminho, sep=';')
+        df = pd.read_csv(caminho, sep=';', dtype=str)
     except pd.errors.EmptyDataError:
         create_empty_csv(caminho)
-        df = pd.read_csv(caminho, sep=';')
+        df = pd.read_csv(caminho, sep=';', dtype=str)
 
     new_row = pd.DataFrame([cadastro.values()], columns=cadastro.keys())
     df = pd.concat([df, new_row], ignore_index=True)
@@ -165,7 +164,7 @@ def serializaCadastro(caminho, cadastro: dict):
 
 
 def carrega_csv(caminho):
-    return pd.read_csv(caminho, sep=';')
+    return pd.read_csv(caminho, sep=';', dtype=str)
 
 
 def validaTelefone(telefone: str) -> bool:
@@ -189,9 +188,6 @@ Confirma? (s/n): ''')
 
 def check_existing_person(csv_db, cadastro, data_type):
     person_found = False
-
-    if data_type == 'Telefone':
-        cadastro[data_type] = int(cadastro[data_type])
 
     existing_person_rows = csv_db.loc[csv_db[data_type] == cadastro[data_type]]
     existing_person_rows_last_entry = existing_person_rows.iloc[-1:]
@@ -222,8 +218,6 @@ def finalize_cadastro(caminho, cadastro):
 
     if resultado:
         cadastro['Entrada'] = time.strftime('%d/%m/%Y %H:%M:%S')
-        cadastro['Confirmado'] = True
-        cadastro['Telefone'] = int(cadastro['Telefone'])
 
         serializaCadastro(caminho, cadastro)
 
@@ -263,12 +257,11 @@ def cadastroTerminal(caminho, tipo):
         'Telefone': '',
         'Entrada': None,
         'Saida': None,
-        'Confirmado': False,
     }
 
     csv_db = carrega_csv(caminho)
 
-    while not cadastro['Confirmado']:
+    while True:
         print('\n\n' + 20 * '-')
         print(f'Novo cadastro de {tipo}')
 
@@ -280,8 +273,7 @@ def cadastroTerminal(caminho, tipo):
         cadastro, cpf_found = check_existing_person(csv_db, cadastro, "CPF")
         if cpf_found:
             print("CPF encontrado na base!")
-            cadastro['Confirmado'] = confirmacaoTerminal(cadastro)
-            if cadastro['Confirmado']:
+            if confirmacaoTerminal(cadastro):
                 finalize_cadastro(caminho, cadastro)
                 continue
         else:
@@ -296,8 +288,7 @@ def cadastroTerminal(caminho, tipo):
                 print("Telefone encontrado na base!")
                 # Readiciona o CPF digita pois na base esta vazio
                 cadastro['CPF'] = cpf
-                cadastro['Confirmado'] = confirmacaoTerminal(cadastro)
-                if cadastro['Confirmado']:
+                if confirmacaoTerminal(cadastro):
                     finalize_cadastro(caminho, cadastro)
                     continue
             else:
@@ -311,8 +302,7 @@ def cadastroTerminal(caminho, tipo):
         cadastro['Profissao'] = input(f'Profissão do {tipo}: ')
         cadastro['Atuacao'] = input(f'Área de atuação do {tipo}: ')
 
-        cadastro['Confirmado'] = confirmacaoTerminal(cadastro)
-        if cadastro['Confirmado']:
+        if confirmacaoTerminal(cadastro):
             print('Cadastro confirmado. Aguarde enquanto realizamos o cadastro...')
             finalize_cadastro(caminho, cadastro)
             print('Cadastro realizado com sucesso!\n')

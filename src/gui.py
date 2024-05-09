@@ -52,7 +52,6 @@ def entrada(tipo):
             'Telefone': telefone.get(),
             'Entrada': None,
             'Saida': None,
-            'Confirmado': False,
         }
 
         match deps.finalize_cadastro(caminho, entrada):
