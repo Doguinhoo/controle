@@ -37,10 +37,10 @@ instalar git https://git-scm.com/downloads
 
 abrir o programa powershell
 
-rodar os seguintes comandos:
+rodar os seguintes comandos na raiz do projeto:
 
 ```
-pip install pandas
+pip install -r requirements.txt
 
 git clone https://github.com/Doguinhoo/controle
 ```

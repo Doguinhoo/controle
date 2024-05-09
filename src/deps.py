@@ -75,8 +75,12 @@ def liberaTerminal(path, tipo):
                     # por enquanto isso não faz nada, mas deveria remover o horário de saída da pessoa
 
 
-# tenta diberar a pessoa com o cpf recebido, retorna o nome da pessoa e o resultado da tentativa
+# tenta liberar a pessoa com o cpf recebido, retorna o nome da pessoa e o resultado da tentativa
 def libera(path, cpf):
+    
+    if not validate_cpf(cpf):
+        return (None, "CPF inválido")
+    
     resultado_df = check_row_using_cpf(path, cpf)
     if resultado_df.empty:
         return (None, "não encontrado")
