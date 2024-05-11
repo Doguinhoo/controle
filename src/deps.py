@@ -158,10 +158,10 @@ def carrega_csv(caminho):
     if not os.path.exists(caminho):
         create_empty_csv(caminho)
     try:
-        return pd.read_csv(caminho, sep=';', dtype=str)
+        return pd.read_csv(caminho, sep=';', dtype=str, keep_default_na=False)
     except pd.errors.EmptyDataError:
         create_empty_csv(caminho)
-        return pd.read_csv(caminho, sep=';', dtype=str)
+        return pd.read_csv(caminho, sep=';', dtype=str, keep_default_na=False)
 
 
 def validaTelefone(telefone: str) -> bool:

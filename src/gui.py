@@ -43,7 +43,6 @@ def entrada(tipo):
     msg.pack()
 
     def testaCpf():
-        print("entrou")
         entrada = {
             'Nome': nome.get(),
             'CPF': deps.format_cpf(cpf.get()),
@@ -58,7 +57,6 @@ def entrada(tipo):
 
         match deps.check_existing_person(csv_db, entrada, "CPF"):
             case (entrada, True):
-                print("sucesso")
                 nome.delete(0, tk.END)
                 nome.insert(0, entrada['Nome'])
                 telefone.delete(0, tk.END)
