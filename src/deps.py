@@ -74,15 +74,19 @@ def liberaTerminal(path, tipo):
                     # por enquanto isso não faz nada, mas deveria remover o horário de saída da pessoa
 
 
-# tenta diberar a pessoa com o cpf recebido, retorna o nome da pessoa e o resultado da tentativa
+# tenta liberar a pessoa com o cpf recebido, retorna o nome da pessoa e o resultado da tentativa
 def libera(path, cpf):
+    
+    if not validate_cpf(cpf):
+        return (None, "CPF inválido")
+    
     resultado_df = check_row_using_cpf(path, cpf)
     if resultado_df.empty:
         return (None, "não encontrado")
 
     nome = get_name(resultado_df, resultado_df.index[0])
 
-    if resultado_df['Saida'].notnull().all():
+    if resultado_df['Saida'].iloc[0] != "":
         return (nome, "já saiu")
 
     df = carrega_csv(path)
@@ -158,10 +162,10 @@ def carrega_csv(caminho):
     if not os.path.exists(caminho):
         create_empty_csv(caminho)
     try:
-        return pd.read_csv(caminho, sep=';', dtype=str)
+        return pd.read_csv(caminho, sep=';', dtype=str, keep_default_na=False)
     except pd.errors.EmptyDataError:
         create_empty_csv(caminho)
-        return pd.read_csv(caminho, sep=';', dtype=str)
+        return pd.read_csv(caminho, sep=';', dtype=str, keep_default_na=False)
 
 
 def validaTelefone(telefone: str) -> bool:
