@@ -309,3 +309,17 @@ def cadastroTerminal(caminho, tipo):
             print('Cadastro realizado com sucesso!\n')
         else:
             print('Dados incorretos. Cadastro cancelado. Reinicie o processo\n\n')
+
+
+def volun_number(df):
+    #checa quantas pessoas entraram no dia de hoje mas não têm saída
+
+    df['Entrada'] = pd.to_datetime(df['Entrada'], format='%d/%m/%Y %H:%M:%S')
+    df['Saida'] = pd.to_datetime(df['Saida'], format='%d/%m/%Y %H:%M:%S')
+
+    # Filter for today's date
+    today = pd.Timestamp("today").date()
+    df_filtered = df.loc[(df['Entrada'].dt.date == today)]
+
+    # Filter for empty leaving time entries (NaN)
+    return df_filtered['Saida'].isna().sum()
