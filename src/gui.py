@@ -101,6 +101,7 @@ def entrada(tipo):
 
     janela.bind("<Return>", enviarEntrada)
     janela.bind("<KP_Enter>", enviarEntrada)
+    janela.bind("<Escape>", lambda _: janela.destroy())
 
     cpf.focus_set()
 
@@ -146,6 +147,7 @@ def saida(tipo):
 
     janela.bind("<Return>", enviarSaida)
     janela.bind("<KP_Enter>", enviarSaida)
+    janela.bind("<Escape>", lambda _: janela.destroy())
 
     cpf.focus_set()
 
@@ -169,6 +171,7 @@ def janelaDeControle(tipo):
 
     janela.bind('<Return>', lambda _: janela.focus_get().invoke())
     janela.bind('<KP_Enter>', lambda _: janela.focus_get().invoke())
+    janela.bind("<Escape>", lambda _: janela.destroy())
 
     botaoEntrada.focus_set()
 
