@@ -311,8 +311,9 @@ def cadastroTerminal(caminho, tipo):
             print('Dados incorretos. Cadastro cancelado. Reinicie o processo\n\n')
 
 
-def volun_number(df):
+def numero_pessoas(caminho):
     #checa quantas pessoas entraram no dia de hoje mas não têm saída
+    df = carrega_csv(caminho)
 
     df['Entrada'] = pd.to_datetime(df['Entrada'], format='%d/%m/%Y %H:%M:%S')
     df['Saida'] = pd.to_datetime(df['Saida'], format='%d/%m/%Y %H:%M:%S')
