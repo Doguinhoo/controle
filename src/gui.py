@@ -100,6 +100,7 @@ def entrada(tipo):
               command=lambda: enviarEntrada(None)).pack()
 
     janela.bind("<Return>", enviarEntrada)
+    janela.bind("<KP_Enter>", enviarEntrada)
 
     cpf.focus_set()
 
@@ -144,6 +145,7 @@ def saida(tipo):
               command=lambda: enviarSaida(None)).pack()
 
     janela.bind("<Return>", enviarSaida)
+    janela.bind("<KP_Enter>", enviarSaida)
 
     cpf.focus_set()
 
@@ -166,6 +168,7 @@ def janelaDeControle(tipo):
     grade.pack()
 
     janela.bind('<Return>', lambda _: janela.focus_get().invoke())
+    janela.bind('<KP_Enter>', lambda _: janela.focus_get().invoke())
 
     botaoEntrada.focus_set()
 
