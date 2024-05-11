@@ -101,6 +101,8 @@ def entrada(tipo):
 
     janela.bind("<Return>", enviarEntrada)
 
+    cpf.focus_set()
+
     janela.mainloop()
 
 
@@ -143,6 +145,8 @@ def saida(tipo):
 
     janela.bind("<Return>", enviarSaida)
 
+    cpf.focus_set()
+
     janela.mainloop()
 
 
@@ -152,18 +156,17 @@ def janelaDeControle(tipo):
     janela.option_add('*Font', 'TkDefaultFont 40')
     janela.title(f"Controde de {tipo}")
 
-    # fonte = font.Font(size=tamanhoFonte)
     grade = tk.Frame(master=janela)
 
-    tk.Button(master=grade, text="Entrada",
-              command=lambda: entrada(tipo)).grid(row=0, column=0)
-    tk.Button(master=grade, text="Saída",
-              command=lambda: saida(tipo)).grid(row=0, column=1)
+    botaoEntrada = tk.Button(master=grade, text="Entrada", command=lambda: entrada(tipo))
+    botaoEntrada.grid(row=0, column=0)
+    botaoSaida = tk.Button(master=grade, text="Saída", command=lambda: saida(tipo))
+    botaoSaida.grid(row=0, column=1)
 
     grade.pack()
 
+    janela.bind('<Return>', lambda _: janela.focus_get().invoke())
+
+    botaoEntrada.focus_set()
+
     janela.mainloop()
-
-
-if __name__ == "__main__":
-    janelaDeControle("voluntário")
