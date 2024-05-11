@@ -14,21 +14,19 @@ def entrada_saude(tipo) -> None:
             'Nome': nome.get(),
             'CPF': format_cpf(cpf.get()),
             'Registro': reg_conselho.get(),
-            'Sala': sala.get(),
+            'Sala': sala_value.get(),
             'Entrada': '',
             'Saida': '',
         }
 
         csv_db = carrega_csv(caminho)
 
-        match check_existing_person(csv_db, entrada, "CPF", False):
+        match check_existing_person(csv_db, entrada, "CPF", saude=True):
             case (entrada, True):
                 nome.delete(1, tk.END)
                 nome.insert(0, entrada['Nome'])
                 reg_conselho.delete(0, tk.END)
                 reg_conselho.insert(0, entrada['Registro'])
-                sala.delete(0, tk.END)
-                sala.insert(0, entrada['Sala'])
                 return True
             case (_, False):
                 return False
@@ -53,7 +51,10 @@ def entrada_saude(tipo) -> None:
     reg_conselho.grid(row=2, column=1)
 
     tk.Label(master=grade, text="Sala:").grid(row=3, column=0)
-    sala = tk.Entry(master=grade, width=50)
+    sala_options = ['Sala 1', 'Sala 2', 'Sala 3', 'Sala 4', 'Sala 5']
+    sala_value = tk.StringVar(grade)
+    sala_value.set('Selecione a sala')
+    sala = tk.OptionMenu(grade, sala_value, *sala_options)
     sala.grid(row=3, column=1)
 
     grade.pack()
@@ -66,7 +67,7 @@ def entrada_saude(tipo) -> None:
             'Nome': nome.get(),
             'CPF': format_cpf(cpf.get()),
             'Registro' : reg_conselho.get(),
-            'Sala' : sala.get(),
+            'Sala' : sala_value.get(),
             'Entrada': '',
             'Saida': '',
         }
@@ -74,11 +75,11 @@ def entrada_saude(tipo) -> None:
         match finalize_cadastro(caminho, entrada):
             case (True, _):
                 msg.config(text="Cadastro registrado", bg="green")
+                nome.delete(0, tk.END)
                 cpf.delete(0, tk.END)
                 cpf.config(bg="white")
-                nome.delete(0, tk.END)
                 reg_conselho.delete(0, tk.END)
-                sala.delete(0, tk.END)
+                sala_value.set('Selecione a sala')
             case (False, erros):
                 for erro in erros:
                     match erro:

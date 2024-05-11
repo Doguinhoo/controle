@@ -12,17 +12,27 @@ PATH_UNKNOWN = PATH_DADOS + 'Default/default.csv'
 
 def create_empty_csv(path) -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    df = pd.DataFrame(columns=[
-        'Nome',
-        'CPF',
-        'Profissao',
-        'Atuacao',
-        'Telefone',
-        'Entrada',
-        'Saida',
-    ]
-    )
-
+    if path == PATH_SAU:
+        df = pd.DataFrame(columns=[
+            'Nome',
+            'CPF',
+            'Registro',
+            'Sala',
+            'Entrada',
+            'Saida',
+        ]
+        )
+    else:
+        df = pd.DataFrame(columns=[
+            'Nome',
+            'CPF',
+            'Profissao',
+            'Atuacao',
+            'Telefone',
+            'Entrada',
+            'Saida',
+        ]
+        )
     df.to_csv(path, sep=";", index=False)
 
 
@@ -115,19 +125,6 @@ def validaTelefone(telefone: str) -> bool:
     return telefone.isdigit() and len(telefone) == 11
 
 
-def confirmacaoTerminal(cadastro) -> bool:
-    print(f'''
-        Verifique se as informações estão corretas:
-        Nome: {cadastro['Nome']}
-        CPF: {cadastro['CPF']}
-        Profissão: {cadastro['Profissao']}
-        Área de atuação: {cadastro['Atuacao']}
-        Telefone: {cadastro['Telefone']}
-        Confirma? (s/n): ''')
-    resposta = input().strip().lower()
-    return resposta in ['s', 'sim', 'yes', 'y', '']
-
-
 def check_existing_person(csv_db, cadastro, data_type, saude=False) -> tuple:
     person_found = False
 
@@ -143,7 +140,6 @@ def check_existing_person(csv_db, cadastro, data_type, saude=False) -> tuple:
         cadastro['CPF'] = existing_person_rows_last_entry['CPF'].values[0]
         if saude:
             cadastro['Registro'] = existing_person_rows_last_entry['Registro'].values[0]
-            cadastro['Sala'] = existing_person_rows_last_entry['Sala'].values[0]
 
         else:
             cadastro['Profissao'] = existing_person_rows_last_entry['Profissao'].values[0]
