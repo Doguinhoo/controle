@@ -6,6 +6,33 @@ tamanhoFonte = 28
 
 
 def entrada(tipo):
+    def testaCpf():
+        entrada = {
+            'Nome': nome.get(),
+            'CPF': deps.format_cpf(cpf.get()),
+            'Profissao': profissao.get(),
+            'Atuacao': area.get(),
+            'Telefone': telefone.get(),
+            'Entrada': '',
+            'Saida': '',
+        }
+
+        csv_db = deps.carrega_csv(caminho)
+
+        match deps.check_existing_person(csv_db, entrada, "CPF"):
+            case (entrada, True):
+                nome.delete(1, tk.END)
+                nome.insert(0, entrada['Nome'])
+                telefone.delete(0, tk.END)
+                telefone.insert(0, entrada['Telefone'])
+                profissao.delete(0, tk.END)
+                profissao.insert(0, entrada['Profissao'])
+                area.delete(0, tk.END)
+                area.insert(0, entrada['Atuacao'])
+                return True
+            case (_, False):
+                return False
+
     match tipo:
         case 'voluntário': caminho = deps.PATH_VOL
         case 'abrigado': caminho = deps.PATH_ABR
@@ -18,7 +45,7 @@ def entrada(tipo):
     grade = tk.Frame(master=janela)
 
     tk.Label(master=grade, text="CPF:").grid(row=0, column=0)
-    cpf = tk.Entry(master=grade, width=50, validate="focusout", validatecommand=lambda: testaCpf())
+    cpf = tk.Entry(master=grade, width=50, validate="focusout", validatecommand=testaCpf)
     cpf.grid(row=0, column=1)
 
     tk.Label(master=grade, text="Nome:").grid(row=1, column=0)
@@ -41,30 +68,6 @@ def entrada(tipo):
 
     msg = tk.Label(master=janela, wraplength=350)
     msg.pack()
-
-    def testaCpf():
-        entrada = {
-            'Nome': nome.get(),
-            'CPF': deps.format_cpf(cpf.get()),
-            'Profissao': profissao.get(),
-            'Atuacao': area.get(),
-            'Telefone': telefone.get(),
-            'Entrada': '',
-            'Saida': '',
-        }
-
-        csv_db = deps.carrega_csv(caminho)
-
-        match deps.check_existing_person(csv_db, entrada, "CPF"):
-            case (entrada, True):
-                nome.delete(0, tk.END)
-                nome.insert(0, entrada['Nome'])
-                telefone.delete(0, tk.END)
-                telefone.insert(0, entrada['Telefone'])
-                profissao.delete(0, tk.END)
-                profissao.insert(0, entrada['Profissao'])
-                area.delete(0, tk.END)
-                area.insert(0, entrada['Atuacao'])
 
     def enviarEntrada(evento):
         entrada = {
