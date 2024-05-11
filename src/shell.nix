@@ -9,7 +9,7 @@ in
       (pkgs.python3.withPackages (python-pkgs: [
         # select Python packages here
         python-pkgs.pandas
-        python-pkgs.requests
+        python-pkgs.tkinter
       ]))
     ];
   }
