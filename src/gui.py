@@ -17,13 +17,13 @@ def entrada(tipo):
 
     grade = tk.Frame(master=janela)
 
-    tk.Label(master=grade, text="Nome:").grid(row=0, column=0)
-    nome = tk.Entry(master=grade, width=50)
-    nome.grid(row=0, column=1)
+    tk.Label(master=grade, text="CPF:").grid(row=0, column=0)
+    cpf = tk.Entry(master=grade, width=50, validate="focusout", validatecommand=lambda: testaCpf())
+    cpf.grid(row=0, column=1)
 
-    tk.Label(master=grade, text="CPF:").grid(row=1, column=0)
-    cpf = tk.Entry(master=grade, width=50)
-    cpf.grid(row=1, column=1)
+    tk.Label(master=grade, text="Nome:").grid(row=1, column=0)
+    nome = tk.Entry(master=grade, width=50)
+    nome.grid(row=1, column=1)
 
     tk.Label(master=grade, text="Telefone:").grid(row=2, column=0)
     telefone = tk.Entry(master=grade, width=50)
@@ -42,6 +42,32 @@ def entrada(tipo):
     msg = tk.Label(master=janela, wraplength=350)
     msg.pack()
 
+    def testaCpf():
+        print("entrou")
+        entrada = {
+            'Nome': nome.get(),
+            'CPF': deps.format_cpf(cpf.get()),
+            'Profissao': profissao.get(),
+            'Atuacao': area.get(),
+            'Telefone': telefone.get(),
+            'Entrada': '',
+            'Saida': '',
+        }
+
+        csv_db = deps.carrega_csv(caminho)
+
+        match deps.check_existing_person(csv_db, entrada, "CPF"):
+            case (entrada, True):
+                print("sucesso")
+                nome.delete(0, tk.END)
+                nome.insert(0, entrada['Nome'])
+                telefone.delete(0, tk.END)
+                telefone.insert(0, entrada['Telefone'])
+                profissao.delete(0, tk.END)
+                profissao.insert(0, entrada['Profissao'])
+                area.delete(0, tk.END)
+                area.insert(0, entrada['Atuacao'])
+
     def enviarEntrada(evento):
         entrada = {
             'Nome': nome.get(),
@@ -49,8 +75,8 @@ def entrada(tipo):
             'Profissao': profissao.get(),
             'Atuacao': area.get(),
             'Telefone': telefone.get(),
-            'Entrada': None,
-            'Saida': None,
+            'Entrada': '',
+            'Saida': '',
         }
 
         match deps.finalize_cadastro(caminho, entrada):
@@ -106,8 +132,7 @@ def saida(tipo):
             case (nome, "já saiu"):
                 msg.config(text=f"{nome} já saiu", bg="red")
             case (nome, "confirmado"):
-                msg.config(text=f"Saída de {
-                           nome} marcada com sucesso", bg="green")
+                msg.config(text=f"Saída de {nome} marcada com sucesso", bg="green")
                 cpf.delete(0, tk.END)
 
     tk.Button(master=janela, text="Enviar",
