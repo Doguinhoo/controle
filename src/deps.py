@@ -315,8 +315,8 @@ def numero_pessoas(caminho):
     #checa quantas pessoas entraram no dia de hoje mas não têm saída
     df = carrega_csv(caminho)
 
-    df['Entrada'] = pd.to_datetime(df['Entrada'], format='%d/%m/%Y %H:%M:%S')
-    df['Saida'] = pd.to_datetime(df['Saida'], format='%d/%m/%Y %H:%M:%S')
+    df['Entrada'] = pd.to_datetime(df['Entrada'], format='%d/%m/%Y %H:%M:%S', errors = "coerce")
+    df['Saida'] = pd.to_datetime(df['Saida'], format='%d/%m/%Y %H:%M:%S', errors = "coerce")
 
     # Filter for today's date
     today = pd.Timestamp("today").date()
