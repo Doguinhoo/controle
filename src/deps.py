@@ -320,7 +320,7 @@ def numero_pessoas(caminho):
 
     # Filter for today's date
     today = pd.Timestamp("today").date()
-    df_filtered = df.loc[(df['Entrada'].dt.date == today)]
+    df_filtered = df.loc[(df['Entrada'].dt.date == today) & (df['Entrada'] != "null")]
 
     # Filter for empty leaving time entries (NaN)
     return df_filtered['Saida'].isna().sum()
