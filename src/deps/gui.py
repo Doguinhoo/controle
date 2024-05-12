@@ -4,7 +4,6 @@ from deps.dependencies import *
 # tipo: "voluntário", "abrigado" ou "voluntário da saúde"
 FONT_SIZE = 28
 
-
 def entrada_saude(tipo) -> None:
     caminho = PATH_SAU
 
@@ -66,11 +65,16 @@ def entrada_saude(tipo) -> None:
         entrada = {
             'Nome': nome.get(),
             'CPF': format_cpf(cpf.get()),
-            'Registro' : reg_conselho.get(),
-            'Sala' : sala_value.get(),
+            'Registro': reg_conselho.get(),
+            'Sala': sala_value.get(),
             'Entrada': '',
             'Saida': '',
         }
+
+        if testaBanido(entrada):
+            msg.config(text="PESSOA BANIDA", bg="red")
+            return
+
 
         match finalize_cadastro(caminho, entrada):
             case (True, _):
@@ -217,8 +221,13 @@ def entrada(tipo) -> None:
             'Saida': '',
         }
 
+        if testaBanido(entrada):
+            msg.config(text="PESSOA BANIDA", bg="red")
+            return
+
         match finalize_cadastro(caminho, entrada):
             case (True, _):
+
                 msg.config(text="Cadastro registrado", bg="green")
                 nome.delete(0, tk.END)
                 cpf.delete(0, tk.END)
@@ -319,3 +328,7 @@ def janelaDeControle(tipo) -> None:
     botaoEntrada.focus_set()
 
     janela.mainloop()
+
+def testaBanido(cadastro):
+    # temporário, deve ser trocado por uma função em dependencies.py
+    return True
